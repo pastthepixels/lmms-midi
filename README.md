@@ -15,6 +15,7 @@ What doesn't work (yet)
 * Beat/Bassline editor
 * Panning
 * Multiple drum tracks
+* Reverb/chorus
 
 What does work (to my knowledge)
 ================================
