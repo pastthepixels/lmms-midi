@@ -16,6 +16,7 @@ What doesn't work (yet)
 * Panning
 * Multiple drum tracks
 * Reverb/chorus
+* Automation
 
 What does work (to my knowledge)
 ================================
