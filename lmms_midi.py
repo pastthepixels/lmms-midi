@@ -24,6 +24,7 @@ class Song:
             midi_file.addTempo(track_num, channel, self.bpm)
             midi_file.addProgramChange(track_num, channel, 0, track.patch) # Channel num (2nd variable) == track num
             midi_file.addControllerEvent(track_num, channel, 0, 7, min(int(track.volume * 255), 127)) # Sets the track's volume
+            midi_file.addControllerEvent(track_num, channel, 0, 10, min(int((track.pan + 1) / 2 * 127), 127)) # Sets the track's pan
 
             for pattern in track.patterns:
                 for note in pattern.notes:
@@ -41,6 +42,7 @@ class Track:
     bank = 0
     patch = 0
     volume = 0 # out of 1, float
+    pan = 0 # -1 or 1
     patterns = []
     def __init__(self, name, bank = 0, patch = 0):
         self.patterns = []
@@ -53,7 +55,7 @@ class Track:
 
 class Note:
     pitch = 0
-    pan = 0
+    pan = 0 # WIP (it's the thought that counts)
     time = 0
     duration = 0
     volume = 0 # out of 1, float
@@ -103,6 +105,7 @@ def parse_xml(xml_path):
         midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
         midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
         midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200
+        midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100
         # 6. Loops through each pattern, adding notes
         for pattern in track.findall("pattern"):
             midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
