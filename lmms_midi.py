@@ -95,24 +95,20 @@ def parse_xml(xml_path):
     midi_song = Song(xml_path, int(head.attrib["bpm"]))
     # 4. Goes through each track, ensuring it's a SF2 Player
     sf2_tracks = []
-    for child in song[0]:
-        if "name" in child[0][0].attrib and child[0][0].attrib["name"] == "sf2player": sf2_tracks.append(child)
+    for track in song.find("trackcontainer"):
+        if "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player": sf2_tracks.append(track)
     # 5. Goes through each SF2 Player track
     for track in sf2_tracks:
         midi_track = Track(name=track.attrib["name"])
-        midi_track.patch = int(track[0][0][0].attrib["patch"])
-        midi_track.bank = int(track[0][0][0].attrib["bank"])
-        midi_track.volume = float(track[0].attrib["vol"]) / 200
-        # 6. Checks for patterns
-        patterns = []
-        for child in track:
-            if child.tag == "pattern": patterns.append(child)
-        # 7. Loops through each bar, adding notes
-        for pattern in patterns:
+        midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
+        midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
+        midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200
+        # 6. Loops through each pattern, adding notes
+        for pattern in track.findall("pattern"):
             midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
             for note in pattern:
                 midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
             midi_track.add_pattern(midi_pattern)
-        # 8. Adds track
+        # 7. Adds track
         midi_song.add_track(midi_track)
     return midi_song
