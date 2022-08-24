@@ -23,11 +23,12 @@ class Song:
             midi_file.addTrackName(track_num, 0, track.name)
             midi_file.addTempo(track_num, channel, self.bpm)
             midi_file.addProgramChange(track_num, channel, 0, track.patch) # Channel num (2nd variable) == track num
+            midi_file.addControllerEvent(track_num, channel, 0, 7, min(int(track.volume * 255), 127)) # Sets the track's volume
 
             for pattern in track.patterns:
                 for note in pattern.notes:
                     note.pitch += 12 # Have to raise everything by an octave for some reason. Very cool
-                    midi_file.addNote(track_num, channel, note.pitch, (note.time + pattern.pos) / 48, note.duration / 48, int((note.volume/200 * track.volume/200) * 255))
+                    midi_file.addNote(track_num, channel, note.pitch, (note.time + pattern.pos) / 48, note.duration / 48, int(note.volume * 127))
             
             if track.bank == 128: channel = oldchannel # Restores channel count as usual
             channel += 1
@@ -39,7 +40,7 @@ class Track:
     name = ""
     bank = 0
     patch = 0
-    volume = 0 # out of 200
+    volume = 0 # out of 1, float
     patterns = []
     def __init__(self, name, bank = 0, patch = 0):
         self.patterns = []
@@ -55,7 +56,7 @@ class Note:
     pan = 0
     time = 0
     duration = 0
-    volume = 0 # out of 200
+    volume = 0 # out of 1, float
 
     def __init__(self, pos = 0, pan = 0, length = 1, vol = 100, key = 60):
         self.pitch = key
@@ -88,8 +89,8 @@ def parse_xml(xml_path):
     tree = ET.parse(xml_path)
     root = tree.getroot()        
     # 2. Gets the <head> and <song> elements        
-    head = root[0]
-    song = root[1]
+    head = root.find("head")
+    song = root.find("song")
     # 3. Creates a Song instance with right name/bpm/time signature
     midi_song = Song(xml_path, int(head.attrib["bpm"]))
     # 4. Goes through each track, ensuring it's a SF2 Player
@@ -101,7 +102,7 @@ def parse_xml(xml_path):
         midi_track = Track(name=track.attrib["name"])
         midi_track.patch = int(track[0][0][0].attrib["patch"])
         midi_track.bank = int(track[0][0][0].attrib["bank"])
-        midi_track.volume = float(track[0].attrib["vol"])
+        midi_track.volume = float(track[0].attrib["vol"]) / 200
         # 6. Checks for patterns
         patterns = []
         for child in track:
@@ -110,7 +111,7 @@ def parse_xml(xml_path):
         for pattern in patterns:
             midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
             for note in pattern:
-                midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=int(note.attrib["vol"]), key=int(note.attrib["key"])))
+                midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
             midi_track.add_pattern(midi_pattern)
         # 8. Adds track
         midi_song.add_track(midi_track)
