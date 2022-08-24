@@ -13,11 +13,11 @@ python3 main.py YOURFILE.mmp
 What doesn't work (yet)
 =======================
 * Beat/Bassline editor
-* Panning (see https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html for some controller messages to use)
 * Multiple drum tracks
 * Reverb/chorus
 * Automation
 * Track volume > 100%
+Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
 
 What does work (to my knowledge)
 ================================
