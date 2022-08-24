@@ -14,10 +14,10 @@ What doesn't work (yet)
 =======================
 * Beat/Bassline editor
 * Multiple drum tracks
-* Reverb/chorus
+* Effects (incl. reverb/chorus)
 * Automation
 * Track volume > 100%
-Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
+*Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html*
 
 What does work (to my knowledge)
 ================================
