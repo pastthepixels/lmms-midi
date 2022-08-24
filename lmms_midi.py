@@ -5,6 +5,7 @@ class Song:
     name = ""
     bpm = 0
     tracks = []
+    timesig = [4, 4]
     def __init__(self, name, bpm = 120):
         self.name = name
         self.bpm = bpm
@@ -21,6 +22,7 @@ class Song:
             if track.bank == 128: channel = 9 # Sets to channel 9 (drums) if bank is set to the one where there's drums
            
             midi_file.addTrackName(track_num, 0, track.name)
+            midi_file.addTimeSignature(track_num, 0, self.timesig[0], self.timesig[1], 24)
             midi_file.addTempo(track_num, channel, self.bpm)
             midi_file.addProgramChange(track_num, channel, 0, track.patch) # Channel num (2nd variable) == track num
             midi_file.addControllerEvent(track_num, channel, 0, 7, min(int(track.volume * 255), 127)) # Sets the track's volume
@@ -95,6 +97,7 @@ def parse_xml(xml_path):
     song = root.find("song")
     # 3. Creates a Song instance with right name/bpm/time signature
     midi_song = Song(xml_path, int(head.attrib["bpm"]))
+    midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
     # 4. Goes through each track, ensuring it's a SF2 Player
     sf2_tracks = []
     for track in song.find("trackcontainer"):
