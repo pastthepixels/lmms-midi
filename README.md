@@ -5,6 +5,10 @@ A simple Python script to convert uncompressed (.mmp) LMMS songs to MIDI files, 
 
 USAGE
 =====
+Installing all requirements (which is just MIDIUtil):
+```bash
+pip install -r requirements.txt
+```
 With `main.py`:
 ```bash
 python3 main.py YOURFILE.mmp
