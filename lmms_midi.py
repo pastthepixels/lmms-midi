@@ -1,16 +1,53 @@
+from array import ArrayType
 import xml.etree.ElementTree as ET
 from midiutil.MidiFile import MIDIFile
 
+class Note:
+    def __init__(self, pos:int=0, pan:float=0, length:int=1, vol:float=100, key:int=60):
+        self.pitch = key
+        self.time = pos
+        self.duration = length
+        self.volume = vol # out of 1, float
+        self.pan = pan # WIP (it's the thought that counts)
+    
+    def to_string(self):
+        return "Note: pitch={0}, time={1}, duration={2}, volume={3}, pan{4}".format(self.pitch, self.time, self.duration, self.volume, self.pan)
+
+class Pattern:
+    def __init__(self, pos:int, notes:ArrayType):
+        self.pos = pos
+        self.notes = notes
+    
+    def add_note(self, note:Note):
+        self.notes.append(note)
+    
+    def to_string(self):
+        string = "Pattern: "
+        for idx, note in enumerate(self.notes):
+            string += ("\n\t {0}. " + note.to_string()).format(idx)
+        return string
+
+class Track:
+    patterns = []
+    def __init__(self, name:str, bank:int=0, patch:int=0):
+        self.patterns = []
+        self.bank = bank
+        self.patch = patch
+        self.name = name
+        self.volume = 0 # out of 1
+        self.pan = 0 # -1 or 1
+    
+    def add_pattern(self, pattern:Pattern):
+        self.patterns.append(pattern)
+
 class Song:
-    name = ""
-    bpm = 0
-    tracks = []
-    timesig = [4, 4]
-    def __init__(self, name, bpm = 120):
+    def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4], tracks:ArrayType=ArrayType.__new__()):
+        self.timesig = timesig
+        self.tracks = tracks
         self.name = name
         self.bpm = bpm
     
-    def add_track(self, track):
+    def add_track(self, track:Track):
         self.tracks.append(track)
 
     def compile_export(self):
@@ -38,55 +75,6 @@ class Song:
 
         with open("{0}.mid".format(self.name), 'wb') as outf:
             midi_file.writeFile(outf)
-
-class Track:
-    name = ""
-    bank = 0
-    patch = 0
-    volume = 0 # out of 1, float
-    pan = 0 # -1 or 1
-    patterns = []
-    def __init__(self, name, bank = 0, patch = 0):
-        self.patterns = []
-        self.bank = bank
-        self.patch = patch
-        self.name = name
-    
-    def add_pattern(self, pattern):
-        self.patterns.append(pattern)
-
-class Note:
-    pitch = 0
-    pan = 0 # WIP (it's the thought that counts)
-    time = 0
-    duration = 0
-    volume = 0 # out of 1, float
-
-    def __init__(self, pos = 0, pan = 0, length = 1, vol = 100, key = 60):
-        self.pitch = key
-        self.time = pos
-        self.duration = length
-        self.volume = vol
-        self.pan = pan
-    
-    def to_string(self):
-        return "Note: pitch={0}, time={1}, duration={2}, volume={3}, pan{4}".format(self.pitch, self.time, self.duration, self.volume, self.pan)
-
-class Pattern:
-    notes = []
-    pos = 0
-    def __init__(self, pos, notes):
-        self.pos = pos
-        self.notes = notes
-    
-    def add_note(self, note):
-        self.notes.append(note)
-    
-    def to_string(self):
-        string = "Pattern: "
-        for idx, note in enumerate(self.notes):
-            string += ("\n\t {0}. " + note.to_string()).format(idx)
-        return string
 
 def parse_xml(xml_path):
     # 1. Loads and parses XML
