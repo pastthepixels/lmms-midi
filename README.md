@@ -16,8 +16,6 @@ python3 main.py YOURFILE.mmp
 
 What doesn't work (yet)
 =======================
-* Beat/Bassline editor
-* Multiple drum tracks
 * Effects (incl. reverb/chorus)
 * Automation
 * Track volume > 100%
@@ -27,3 +25,7 @@ What doesn't work (yet)
 What does work (to my knowledge)
 ================================
 Everything else
+
+Notes
+=====
+* If you have multiple drum tracks, they'll converge into one because you can only have one MIDI channel for drums. It'll sound fine, but this means the resulting drum track will take on the properties (ex. volume/panning) of the lowest drum track you have (where beat/bassline tracks count as lower than regular tracks). Unfortunately this also means that LMMS, when importing your .mid files, will also import the drums as one track.

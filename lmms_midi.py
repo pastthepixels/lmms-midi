@@ -1,4 +1,5 @@
 from array import ArrayType
+from math import ceil, log2
 import xml.etree.ElementTree as ET
 from midiutil.MidiFile import MIDIFile
 
@@ -9,6 +10,9 @@ class Note:
         self.duration = length
         self.volume = vol # out of 1, float
         self.pan = pan # WIP (it's the thought that counts)
+    
+    def clone(self):
+        return Note(pos=self.time, pan=self.pan, length=self.duration, vol=self.volume, key=self.pitch)
     
     def to_string(self):
         return "Note: pitch={0}, time={1}, duration={2}, volume={3}, pan{4}".format(self.pitch, self.time, self.duration, self.volume, self.pan)
@@ -26,6 +30,15 @@ class Pattern:
         for idx, note in enumerate(self.notes):
             string += ("\n\t {0}. " + note.to_string()).format(idx)
         return string
+    
+    def get_length(self):
+        return self.notes[-1].time + self.notes[-1].duration
+    
+    def clone_notes(self):
+        notes = []
+        for note in self.notes:
+            notes.append(note.clone())
+        return notes
 
 class Track:
     patterns = []
@@ -59,7 +72,7 @@ class Song:
             if track.bank == 128: channel = 9 # Sets to channel 9 (drums) if bank is set to the one where there's drums
            
             midi_file.addTrackName(track_num, 0, track.name)
-            midi_file.addTimeSignature(track_num, 0, self.timesig[0], self.timesig[1], 24)
+            midi_file.addTimeSignature(track_num, 0, self.timesig[0], int(log2(self.timesig[1])), 24)
             midi_file.addTempo(track_num, channel, self.bpm)
             midi_file.addProgramChange(track_num, channel, 0, track.patch) # Channel num (2nd variable) == track num
             midi_file.addControllerEvent(track_num, channel, 0, 7, min(int(track.volume * 255), 127)) # Sets the track's volume
@@ -75,6 +88,9 @@ class Song:
 
         with open("{0}.mid".format(self.name), 'wb') as outf:
             midi_file.writeFile(outf)
+    
+    def get_measure_length(self):
+        return self.timesig[1] * 48
 
 def parse_xml(xml_path):
     # 1. Loads and parses XML
@@ -88,15 +104,15 @@ def parse_xml(xml_path):
     midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
     # 4. Goes through each track, ensuring it's a SF2 Player
     sf2_tracks = []
+    sf2_bb_tracks = []
     for track in song.find("trackcontainer"):
-        if "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player": sf2_tracks.append(track)
+        if is_sf2_player(track):
+            sf2_tracks.append(track)
+        if track.find("bbtrack"):
+            sf2_bb_tracks.append(track)
     # 5. Goes through each SF2 Player track
     for track in sf2_tracks:
-        midi_track = Track(name=track.attrib["name"])
-        midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
-        midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
-        midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200
-        midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100
+        midi_track = midi_track_from_xml(track)
         # 6. Loops through each pattern, adding notes
         for pattern in track.findall("pattern"):
             midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
@@ -105,4 +121,47 @@ def parse_xml(xml_path):
             midi_track.add_pattern(midi_pattern)
         # 7. Adds track
         midi_song.add_track(midi_track)
+    # Easy, right? Well, just you wait until step 6...
+    # 6. Goes through each SF2 Player Beat/Bassline track
+    for bb_track in sf2_bb_tracks:
+        # Goes over each "repeat", called a bbtco and I can't decipher what that stands for
+        all_bbtco = []
+        for child in bb_track:
+            if child.tag == "bbtco" and child.attrib["muted"] == "0": all_bbtco.append([int(child.attrib["pos"]), int(child.attrib["len"])])
+        # Goes over each individual track
+        for track in bb_track.find("bbtrack/trackcontainer"):
+            if is_sf2_player(track) == False: continue # <-- Not all sub-instruments will be sf2 players
+            midi_track = midi_track_from_xml(track)
+            # 6. Loops through each pattern, adding notes. Now THIS part is different...
+            midi_patterns = []
+            for pattern in track.findall("pattern"): # <-- Element (XML) type
+                midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
+                for note in pattern:
+                    note.attrib["len"] = 24 # Because for SOME REASON LMMS sets it to -192 (so this a quarter note now, see line 78 for the same number)
+                    midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
+                midi_patterns.append(midi_pattern)
+            for pattern in midi_patterns: # <-- Pattern type
+                for bbtco in all_bbtco:
+                    pattern_length_measure = midi_song.get_measure_length() * ceil(pattern.get_length()/midi_song.get_measure_length())
+                    for i in range(0, ceil(bbtco[1]/pattern_length_measure)):
+                        clone = Pattern(pos=int(pattern.pos + bbtco[0] + i*pattern_length_measure), notes=[])
+                        # Chops off patterns longer than the bbtco element
+                        for note in pattern.clone_notes():
+                            if (note.time + clone.pos) < (bbtco[0] + bbtco[1]): #"If the global start position of the note is less than/equal to than the global end position of the bbtco..."
+                                clone.notes.append(note)
+                        # Alright. We are FINALLY done with this hell.
+                        midi_track.add_pattern(clone)
+            # 7. Adds track
+            midi_song.add_track(midi_track)
     return midi_song
+
+def is_sf2_player(track):
+    return track.find("instrumenttrack/instrument") and "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player"
+
+def midi_track_from_xml(track):
+    midi_track = Track(name=track.attrib["name"])
+    midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
+    midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
+    midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200
+    midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100
+    return midi_track
