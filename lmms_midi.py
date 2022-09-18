@@ -73,7 +73,7 @@ class Song:
            
             midi_file.addTrackName(track_num, 0, track.name)
             midi_file.addTimeSignature(track_num, 0, self.timesig[0], int(log2(self.timesig[1])), 24)
-            midi_file.addTempo(track_num, channel, self.bpm)
+            midi_file.addTempo(track_num, 0, self.bpm)
             midi_file.addProgramChange(track_num, channel, 0, track.patch) # Channel num (2nd variable) == track num
             midi_file.addControllerEvent(track_num, channel, 0, 7, min(int(track.volume * 255), 127)) # Sets the track's volume
             midi_file.addControllerEvent(track_num, channel, 0, 10, min(int((track.pan + 1) / 2 * 127), 127)) # Sets the track's pan
