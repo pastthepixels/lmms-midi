@@ -162,6 +162,6 @@ def midi_track_from_xml(track):
     midi_track = Track(name=track.attrib["name"])
     midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
     midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
-    midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200
-    midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100
+    midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200 if "vol" in track.find("instrumenttrack").attrib else 1
+    midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100 if "pan" in track.find("instrumenttrack").attrib else 0
     return midi_track
