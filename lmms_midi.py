@@ -54,9 +54,9 @@ class Track:
         self.patterns.append(pattern)
 
 class Song:
-    def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4], tracks:ArrayType=[]):
+    def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4]):
         self.timesig = timesig
-        self.tracks = tracks
+        self.tracks = []
         self.name = name
         self.bpm = bpm
     
