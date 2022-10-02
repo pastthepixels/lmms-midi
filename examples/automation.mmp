@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE lmms-project>
+<lmms-project creator="LMMS" type="song" version="1.0" creatorversion="1.2.2">
+  <head timesig_denominator="4" mastervol="100" masterpitch="0" bpm="140" timesig_numerator="4"/>
+  <song>
+    <trackcontainer y="5" type="song" width="600" height="300" visible="1" minimized="0" x="6" maximized="0">
+      <track tab="0" y="0" type="0" width="262" height="466" solo="0" visible="1" muted="0" name="Overdrive Guitar" minimized="0" x="1186" maximized="0">
+        <instrumenttrack basenote="57" usemasterpitch="1" pan="0" vol="100" fxch="0" pitchrange="1">
+          <pitch scale_type="linear" id="5751201" value="0"/>
+          <instrument name="sf2player">
+            <sf2player reverbLevel="0.89999998" chorusLevel="2" src="soundfonts/gzdoom.sf2" reverbRoomSize="0.2" bank="0" reverbDamping="0.2" reverbOn="0" chorusOn="0" chorusDepth="8" patch="29" chorusSpeed="0.30000001" gain="1" chorusNum="0.89999998" reverbWidth="0.5"/>
+          </instrument>
+          <eldata fcut="14000" fres="0.5" fwet="0" ftype="0">
+            <elvol hold="0.5" lshp="0" latt="0" pdel="0" lspd_numerator="4" lspd="0.1" rel="0.1" lspd_syncmode="0" amt="0" att="0" sustain="0.5" lspd_denominator="4" lamt="0" dec="0.5" lpdel="0" ctlenvamt="0" userwavefile="" x100="0"/>
+            <elcut hold="0.5" lshp="0" latt="0" pdel="0" lspd_numerator="4" lspd="0.1" rel="0.1" lspd_syncmode="0" amt="0" att="0" sustain="0.5" lspd_denominator="4" lamt="0" dec="0.5" lpdel="0" ctlenvamt="0" userwavefile="" x100="0"/>
+            <elres hold="0.5" lshp="0" latt="0" pdel="0" lspd_numerator="4" lspd="0.1" rel="0.1" lspd_syncmode="0" amt="0" att="0" sustain="0.5" lspd_denominator="4" lamt="0" dec="0.5" lpdel="0" ctlenvamt="0" userwavefile="" x100="0"/>
+          </eldata>
+          <chordcreator chord="0" chord-enabled="0" chordrange="1"/>
+          <arpeggiator arptime_denominator="4" arptime="200" arpdir="0" arpskip="0" arpcycle="0" arpmiss="0" arptime_syncmode="0" arptime_numerator="4" arpmode="0" arprange="1" arp="0" arp-enabled="0" arpgate="100"/>
+          <midiport readable="0" inputchannel="0" fixedoutputnote="-1" outputcontroller="0" writable="0" fixedoutputvelocity="-1" inputcontroller="0" fixedinputvelocity="-1" outputprogram="1" basevelocity="63" outputchannel="1"/>
+          <fxchain enabled="0" numofeffects="0"/>
+        </instrumenttrack>
+        <pattern steps="16" type="1" muted="0" name="Overdrive Guitar" pos="0">
+          <note pan="0" len="384" vol="100" pos="0" key="57"/>
+        </pattern>
+      </track>
+      <track type="5" solo="0" muted="0" name="Overdrive Guitar --> Pitch">
+        <automationtrack/>
+        <automationpattern mute="0" len="384" tens="1" prog="1" pos="0" name="Overdrive Guitar>Pitch">
+          <time value="0" pos="0"/>
+          <time value="-46" pos="192"/>
+          <time value="0" pos="384"/>
+          <object id="5751201"/>
+        </automationpattern>
+      </track>
+    </trackcontainer>
+    <track type="6" solo="0" muted="0" name="Automation track">
+      <automationtrack/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Numerator"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Denominator"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Tempo"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Master volume"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Master pitch"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Numerator"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Denominator"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Tempo"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Master volume"/>
+      <automationpattern mute="0" len="192" tens="1" prog="0" pos="0" name="Master pitch"/>
+    </track>
+    <fxmixer y="310" width="561" height="333" visible="1" minimized="0" x="5" maximized="0">
+      <fxchannel soloed="0" volume="1" num="0" muted="0" name="Master">
+        <fxchain enabled="0" numofeffects="0"/>
+      </fxchannel>
+    </fxmixer>
+    <ControllerRackView y="407" width="350" height="200" visible="1" minimized="0" x="836" maximized="0"/>
+    <pianoroll y="1" width="860" height="480" visible="0" minimized="0" x="1" maximized="0"/>
+    <automationeditor y="255" width="860" height="400" visible="0" minimized="0" x="56" maximized="0"/>
+    <projectnotes y="1" width="744" height="400" visible="0" minimized="0" x="1" maximized="0"><![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+</style></head><body style=" font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;">
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p></body></html>]]></projectnotes>
+    <timeline lp0pos="0" lpstate="0" lp1pos="192"/>
+    <controllers/>
+  </song>
+</lmms-project>
