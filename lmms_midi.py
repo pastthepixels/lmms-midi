@@ -1,7 +1,10 @@
 from array import ArrayType
 from math import ceil, log2
-import xml.etree.ElementTree as ET
+from enum import Enum
 from midiutil.MidiFile import MIDIFile
+import xml.etree.ElementTree as ET
+
+# NOTES --> PATTERNS --> REGULAR TRACKS
 
 class Note:
     def __init__(self, pos:int=0, pan:float=0, length:int=1, vol:float=100, key:int=60):
@@ -53,6 +56,29 @@ class Track:
     def add_pattern(self, pattern:Pattern):
         self.patterns.append(pattern)
 
+# AUTOMATION TRACKS
+
+class AutomationTrackTypes(Enum):
+     PITCH = 1
+     VOLUME = 2
+     PAN = 3
+
+class AutomationKey:
+    def __init__(self, time, value):
+        self.time = time
+        self.value = value
+
+class AutomationTrack:
+    def __init__(self, track:Track, automation_type:int):
+        self.keys = []
+        self.track = track
+        self.automation_type = automation_type
+
+    def add_key(self, key:AutomationKey):
+        self.keys.append(key)
+
+# SONGS
+
 class Song:
     def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4]):
         self.timesig = timesig
@@ -92,6 +118,8 @@ class Song:
     def get_measure_length(self):
         return self.timesig[1] * 48
 
+# LOADING FILES
+
 def parse_xml(xml_path):
     # 1. Loads and parses XML
     tree = ET.parse(xml_path)
@@ -102,24 +130,27 @@ def parse_xml(xml_path):
     # 3. Creates a Song instance with right name/bpm/time signature
     midi_song = Song(xml_path, int(head.attrib["bpm"]))
     midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
-    # 4. Goes through each track, ensuring it's a SF2 Player
+    # 4. Goes through each track, classifying them
     sf2_tracks = []
     sf2_bb_tracks = []
+    automation_tracks = []
     for track in song.find("trackcontainer"):
         if is_sf2_player(track):
             sf2_tracks.append(track)
         if track.find("bbtrack"):
             sf2_bb_tracks.append(track)
+        if track.find("automationtrack"):
+            automation_tracks.append(track)
     # 5. Goes through each SF2 Player track
     for track in sf2_tracks:
         midi_track = midi_track_from_xml(track)
-        # 6. Loops through each pattern, adding notes
+        # Loops through each pattern, adding notes
         for pattern in track.findall("pattern"):
             midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
             for note in pattern:
                 midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
             midi_track.add_pattern(midi_pattern)
-        # 7. Adds track
+        # Adds track
         midi_song.add_track(midi_track)
     # Easy, right? Well, just you wait until step 6...
     # 6. Goes through each SF2 Player Beat/Bassline track
@@ -151,6 +182,9 @@ def parse_xml(xml_path):
                                 clone.notes.append(note)
                         # Alright. We are FINALLY done with this hell.
                         midi_track.add_pattern(clone)
+            # 7. Goes through automation tracks
+            for automation_track in automation_tracks:
+                print(automation_track)
             # 7. Adds track
             midi_song.add_track(midi_track)
     return midi_song
