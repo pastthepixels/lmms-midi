@@ -31,10 +31,14 @@ What doesn't work (yet)
 * Note panning
 * Master volume automation tracks
 * Automation tracks in beat/bassline tracks
+* Multiple beat/bassline tracks
+
+Help reduce this list to zero by contributing to lmms-midi! New issues and PRs are very welcome and encouraged!
 
 *Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html*
 
 Notes
 =====
 * If you have multiple drum tracks, they'll converge into one because you can only have one MIDI channel for drums. It'll sound fine, but this means the resulting drum track will take on the properties (ex. volume/panning) of the lowest drum track you have (where beat/bassline tracks count as lower than regular tracks). Unfortunately this also means that LMMS, when importing your .mid files, will also import the drums as one track.
+
 

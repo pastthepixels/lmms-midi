@@ -244,7 +244,7 @@ def parse_xml(xml_path):
         for child in bb_track:
             if child.tag == "bbtco" and child.attrib["muted"] == "0": all_bbtco.append([int(child.attrib["pos"]), int(child.attrib["len"])])
         # Goes over each individual track
-        for track in bb_track.find("bbtrack/trackcontainer"):
+        for track in bb_track.findall("bbtrack/trackcontainer/track"):
             if is_sf2_player(track) == False: continue # <-- Not all sub-instruments will be sf2 players
             midi_track = midi_track_from_xml(track)
             # 6. Loops through each pattern, adding notes. Now THIS part is different...
