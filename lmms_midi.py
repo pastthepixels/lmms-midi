@@ -44,8 +44,8 @@ class Pattern:
         return notes
 
 class Track:
-    patterns = []
     def __init__(self, name:str, bank:int=0, patch:int=0):
+        self.automation_parameters = []
         self.patterns = []
         self.bank = bank
         self.patch = patch
@@ -63,31 +63,93 @@ class AutomationTrackTypes(Enum):
      VOLUME = 2
      PAN = 3
 
+class AutomationParameter: # Put this in a Track
+    def __init__(self, id:int, value:float, automation_type:int):
+        # ID
+        self.id = id
+        # Value and automation type
+        self.value = value
+        self.automation_type = automation_type
+
+    def to_string(self):
+        return "AutomationParameter({0}): id={1}, value={2}".format(self.automation_type, self.id, self.value)
+
 class AutomationKey:
-    def __init__(self, time, value):
+    def __init__(self, time:int, value:float):
         self.time = time
         self.value = value
 
-class AutomationTrack:
-    def __init__(self, track:Track, automation_type:int):
-        self.keys = []
-        self.track = track
-        self.automation_type = automation_type
+class AutomationPattern:
+    def __init__(self, pos:int, id:int, keys:ArrayType):
+        self.keys = keys
+        self.pos = pos
+        self.id = id
 
     def add_key(self, key:AutomationKey):
         self.keys.append(key)
+
+class AutomationTrack:
+    def __init__(self, patterns:ArrayType):
+        self.patterns = patterns
+
+    def add_pattern(self, pattern:AutomationPattern):
+        self.patterns.append(pattern)
+
+def find_automations_in_xml(track):
+    automation_parameters = []
+    for element in track.findall("instrumenttrack/*"):
+        automation_type = None
+        match element.tag:
+            case "pitch":
+                automation_type = AutomationTrackTypes.PITCH
+            case "vol":
+                automation_type = AutomationTrackTypes.VOLUME
+            case "pan":
+                automation_type = AutomationTrackTypes.PAN
+            case _:
+                continue # If it's not a part of the three main automation types it doesn't matter
+        automation_parameters.append(AutomationParameter(int(element.attrib["id"]), float(element.attrib["value"]), automation_type))
+    return automation_parameters
+
+# Runs through all automation tracks in a song and gets all patterns that have a specific ID
+def find_automation_patterns(song, id:int):
+    automation_patterns = []
+    for automation_track in song.automation_tracks:
+        for automation_pattern in automation_track.patterns:
+            if automation_pattern.id == id:
+                automation_patterns.append(automation_pattern)
+    return automation_patterns
+
+# value: float between -1 and 1
+def apply_automation_key(automation_type:int, midi_file:MIDIFile, track_num:int, channel:int, time:int, value:float):
+    match automation_type:
+        case AutomationTrackTypes.PITCH:
+            midi_file.addPitchWheelEvent(track_num, channel, time, int(value * 8192))
+
+        case AutomationTrackTypes.VOLUME:
+            midi_file.addControllerEvent(track_num, channel, time, 7, min(int(value * 255), 127))
+
+        case AutomationTrackTypes.PAN:
+            midi_file.addControllerEvent(track_num, channel, time, 10, min(int((value + 1) / 2 * 127), 127))
 
 # SONGS
 
 class Song:
     def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4]):
-        self.timesig = timesig
-        self.tracks = []
+        # Name/music information
         self.name = name
         self.bpm = bpm
+        self.timesig = timesig
+        # Tracks
+        self.tracks = []
+        # Automation
+        self.automation_tracks = []
     
     def add_track(self, track:Track):
         self.tracks.append(track)
+
+    def add_automation_track(self, automation_track:AutomationTrack):
+        self.automation_tracks.append(automation_track)
 
     def compile_export(self):
         midi_file = MIDIFile(len(self.tracks))
@@ -109,6 +171,28 @@ class Song:
                     note.pitch += 12 # Have to raise everything by an octave for some reason. Very cool
                     midi_file.addNote(track_num, channel, note.pitch, (note.time + pattern.pos) / 48, note.duration / 48, int(note.volume * 127))
             
+            for automation_parameter in track.automation_parameters:
+                automation_patterns = find_automation_patterns(self, automation_parameter.id)
+                for pattern in automation_patterns:
+                    divisor = 100 # Sometimes volumes work on a different scale than pitches (and so on) so we can't always divide by 100 to get it to be normalized
+                    match automation_parameter.automation_type:
+                        case AutomationTrackTypes.PITCH:
+                            divisor = 100
+
+                        case AutomationTrackTypes.VOLUME:
+                            divisor = 200
+
+                        case AutomationTrackTypes.PAN:
+                            divisor = 100
+
+                    for idx, key in enumerate(pattern.keys):
+                        apply_automation_key(automation_parameter.automation_type, midi_file, track_num, channel, (key.time + pattern.pos) / 48, key.value/divisor)
+                        if (idx+1) < len(pattern.keys):
+                            for i in range(0, pattern.keys[idx+1].time - key.time):
+                                # TODO: Add support for different types of automation tracks which interpolate smoothly/not at all
+                                value = (pattern.keys[idx+1].value - key.value) * i/(pattern.keys[idx+1].time - key.time) + key.value # Transitions linearly between two values by i%
+                                apply_automation_key(automation_parameter.automation_type, midi_file, track_num, channel, (key.time + pattern.pos + i) / 48, value/divisor)
+
             if track.bank == 128: channel = oldchannel # Restores channel count as usual
             channel += 1
 
@@ -137,9 +221,9 @@ def parse_xml(xml_path):
     for track in song.find("trackcontainer"):
         if is_sf2_player(track):
             sf2_tracks.append(track)
-        if track.find("bbtrack"):
+        if track.find("bbtrack") != None:
             sf2_bb_tracks.append(track)
-        if track.find("automationtrack"):
+        if track.find("automationtrack") != None:
             automation_tracks.append(track)
     # 5. Goes through each SF2 Player track
     for track in sf2_tracks:
@@ -153,7 +237,7 @@ def parse_xml(xml_path):
         # Adds track
         midi_song.add_track(midi_track)
     # Easy, right? Well, just you wait until step 6...
-    # 6. Goes through each SF2 Player Beat/Bassline track
+    # 6. Goes through each SF2 Player Beat/Bassline trackfor automation_track in automation_tracks:
     for bb_track in sf2_bb_tracks:
         # Goes over each "repeat", called a bbtco and I can't decipher what that stands for
         all_bbtco = []
@@ -182,11 +266,19 @@ def parse_xml(xml_path):
                                 clone.notes.append(note)
                         # Alright. We are FINALLY done with this hell.
                         midi_track.add_pattern(clone)
-            # 7. Goes through automation tracks
-            for automation_track in automation_tracks:
-                print(automation_track)
-            # 7. Adds track
+            # Adds track
             midi_song.add_track(midi_track)
+    # 7. Goes through automation tracks
+    for automation_track in automation_tracks:
+        midi_atrack = AutomationTrack([])
+        for automation_pattern in automation_track.findall("automationpattern"):
+            # TODO: Patterns with multiple IDs
+            midi_pattern = AutomationPattern(int(automation_pattern.attrib["pos"]), int(automation_pattern.findall("object")[0].attrib["id"]), [])
+            midi_pattern.keys = []
+            for automation_key in automation_pattern.findall("time"):
+                midi_pattern.add_key(AutomationKey(int(automation_key.attrib["pos"]), float(automation_key.attrib["value"])))
+            midi_atrack.add_pattern(midi_pattern)
+        midi_song.add_automation_track(midi_atrack)
     return midi_song
 
 def is_sf2_player(track):
@@ -198,4 +290,6 @@ def midi_track_from_xml(track):
     midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
     midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200 if "vol" in track.find("instrumenttrack").attrib else 1
     midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100 if "pan" in track.find("instrumenttrack").attrib else 0
+    midi_track.automation_parameters = find_automations_in_xml(track)
     return midi_track
+
