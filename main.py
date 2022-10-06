@@ -7,7 +7,7 @@ files = []
 
 def export_all():
     for path in files:
-    	print(path)
+    	print("Exporting {0}...".format(path))
     	parse_xml(path).compile_export()
 
 def find_flags():
