@@ -1,21 +1,21 @@
 lmms-midi
 =========
 A simple Python script to convert uncompressed (.mmp) LMMS songs to MIDI files, complete with instruments.  
-*Note: The way this works means that it will only work for SF2 players.*
 
-USAGE
-=====
-Installing all requirements (which is just MIDIUtil):
+## Installation and usage
+
+First, make sure you have the latest version of Python. You can head over to https://python.org/downloads to get it.  
+Then you just need to install all the program's requirements (which is just MIDIUtil):
 ```bash
 pip install -r requirements.txt
 ```
-With `main.py`:
+Now you can run lmms-midi! Here's some example usage for `main.py`:
 ```bash
 python3 main.py YOURFILE.mmp
 ```
 
-What works (to my knowledge)
-================================
+## What works (to my knowledge)
+
 * SF2 players (but -- and intentionally -- not other kinds of instruments as they can't be played back via MIDI)
     * Note velocity
     * Track panning
@@ -24,8 +24,8 @@ What works (to my knowledge)
 * SF2 drum kits (be sure to set the bank to 128)
 * Pitch/volume/pan automation tracks
 
-What doesn't work (yet)
-=======================
+## What doesn't work (yet)
+
 * Track volume > 100%
 * Track pitch
 * Note panning
@@ -37,8 +37,8 @@ Help reduce this list to zero by contributing to lmms-midi! New issues and PRs a
 
 *Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html*
 
-Notes
-=====
+## Notes
+
 * If you have multiple drum tracks, they'll converge into one because you can only have one MIDI channel for drums. It'll sound fine, but this means the resulting drum track will take on the properties (ex. volume/panning) of the lowest drum track you have (where beat/bassline tracks count as lower than regular tracks). Unfortunately this also means that LMMS, when importing your .mid files, will also import the drums as one track.
 
 
