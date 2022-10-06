@@ -9,7 +9,7 @@ Then you just need to install all the program's requirements (which is just MIDI
 ```bash
 pip install -r requirements.txt
 ```
-Now you can run lmms-midi! Here's some example usage for `main.py`:
+Now you can run lmms-midi! Download it from either the Releases tab or, if I haven't released any versions yet, from the green "Code" drop-down. Here's some example usage for `main.py`:
 ```bash
 python3 main.py YOURFILE.mmp
 ```
