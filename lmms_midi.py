@@ -212,7 +212,7 @@ def parse_xml(xml_path):
     head = root.find("head")
     song = root.find("song")
     # 3. Creates a Song instance with right name/bpm/time signature
-    midi_song = Song(xml_path, int(head.attrib["bpm"]))
+    midi_song = Song(xml_path[:-4], int(head.attrib["bpm"]))
     midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
     # 4. Goes through each track, classifying them
     sf2_tracks = []
