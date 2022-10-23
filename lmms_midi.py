@@ -80,10 +80,10 @@ class AutomationKey:
         self.value = value
 
 class AutomationPattern:
-    def __init__(self, pos:int, id:int, keys:ArrayType):
+    def __init__(self, pos:int, ids:ArrayType, keys:ArrayType):
         self.keys = keys
         self.pos = pos
-        self.id = id
+        self.ids = []
 
     def add_key(self, key:AutomationKey):
         self.keys.append(key)
@@ -116,7 +116,7 @@ def find_automation_patterns(song, id:int):
     automation_patterns = []
     for automation_track in song.automation_tracks:
         for automation_pattern in automation_track.patterns:
-            if automation_pattern.id == id:
+            if id in automation_pattern.ids:
                 automation_patterns.append(automation_pattern)
     return automation_patterns
 
@@ -272,9 +272,10 @@ def parse_xml(xml_path):
     for automation_track in automation_tracks:
         midi_atrack = AutomationTrack([])
         for automation_pattern in automation_track.findall("automationpattern"):
-            # TODO: Patterns with multiple IDs
-            midi_pattern = AutomationPattern(int(automation_pattern.attrib["pos"]), int(automation_pattern.findall("object")[0].attrib["id"]), [])
+            midi_pattern = AutomationPattern(int(automation_pattern.attrib["pos"]), [], [])
             midi_pattern.keys = []
+            for automation_object in automation_pattern.findall("object"):
+                midi_pattern.ids.append(int(automation_object.attrib["id"]))
             for automation_key in automation_pattern.findall("time"):
                 midi_pattern.add_key(AutomationKey(int(automation_key.attrib["pos"]), float(automation_key.attrib["value"])))
             midi_atrack.add_pattern(midi_pattern)
