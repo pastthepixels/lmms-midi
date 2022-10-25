@@ -250,6 +250,8 @@ def parse_xml(xml_path):
             # 6. Loops through each pattern, adding notes. Now THIS part is different...
             midi_patterns = []
             for pattern in track.findall("pattern"): # <-- Element (XML) type
+                if len(pattern.findall("note")) == 0:
+                    continue
                 midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
                 for note in pattern:
                     note.attrib["len"] = 24 # Because for SOME REASON LMMS sets it to -192 (so this a quarter note now, see line 78 for the same number)
