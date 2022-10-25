@@ -239,7 +239,7 @@ def parse_xml(xml_path):
     # Easy, right? Well, just you wait until step 6...
     # 6. Goes through each SF2 Player Beat/Bassline trackfor automation_track in automation_tracks:
     for bb_track in sf2_bb_tracks:
-        # Goes over each "repeat", called a bbtco and I can't decipher what that stands for
+        # Goes over each "repeat", called a bbtco for Beat/Bassline Track Container
         all_bbtco = []
         for child in bb_track:
             if child.tag == "bbtco" and child.attrib["muted"] == "0": all_bbtco.append([int(child.attrib["pos"]), int(child.attrib["len"])])
