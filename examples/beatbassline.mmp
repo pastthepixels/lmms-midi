@@ -1,101 +1,105 @@
 <?xml version="1.0"?>
 <!DOCTYPE lmms-project>
-<lmms-project creatorversion="1.2.2" version="1.0" creator="LMMS" type="song">
-  <head timesig_denominator="4" masterpitch="0" mastervol="100" bpm="140" timesig_numerator="4"/>
+<lmms-project creatorversion="1.2.2" creator="LMMS" type="song" version="1.0">
+  <head masterpitch="0" bpm="140" timesig_numerator="4" timesig_denominator="4" mastervol="100"/>
   <song>
-    <trackcontainer visible="1" width="600" x="6" maximized="0" height="300" type="song" minimized="0" y="5">
-      <track name="Beat/Bassline 0" muted="0" type="1" solo="0">
+    <trackcontainer height="300" x="6" visible="1" maximized="0" width="856" type="song" minimized="0" y="5">
+      <track type="1" name="Beat/Bassline 0" solo="0" muted="0">
         <bbtrack>
-          <trackcontainer visible="1" width="700" x="778" maximized="0" height="400" type="bbtrackcontainer" minimized="0" y="49">
-            <track name="Sf2 Player" muted="0" type="0" solo="0">
-              <instrumenttrack pitch="0" vol="100" fxch="0" basenote="57" pan="0" pitchrange="1" usemasterpitch="1">
+          <trackcontainer height="400" x="778" visible="1" maximized="0" width="700" type="bbtrackcontainer" minimized="0" y="49">
+            <track type="0" name="SGM-v2" solo="0" muted="0">
+              <instrumenttrack pan="0" usemasterpitch="1" fxch="0" basenote="57" vol="100" pitch="0" pitchrange="1">
                 <instrument name="sf2player">
-                  <sf2player src="soundfonts/SGM-v2.01-HQ-v3.0.sf2" chorusDepth="8" reverbRoomSize="0.2" reverbLevel="0.89999998" chorusLevel="2" bank="0" reverbOn="0" reverbDamping="0.2" chorusSpeed="0.30000001" chorusOn="0" patch="0" gain="1" chorusNum="0.89999998" reverbWidth="0.5"/>
+                  <sf2player src="soundfonts/SGM-v2.01-HQ-v3.0.sf2" chorusOn="0" reverbOn="0" chorusDepth="8" chorusSpeed="0.30000001" reverbLevel="0.89999998" reverbWidth="0.5" chorusLevel="2" reverbDamping="0.2" patch="0" reverbRoomSize="0.2" bank="0" gain="1" chorusNum="0.89999998"/>
                 </instrument>
-                <eldata ftype="0" fres="0.5" fcut="14000" fwet="0">
-                  <elvol x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
-                  <elcut x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
-                  <elres x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
+                <eldata fwet="0" ftype="0" fcut="14000" fres="0.5">
+                  <elvol lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
+                  <elcut lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
+                  <elres lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
                 </eldata>
                 <chordcreator chordrange="1" chord-enabled="0" chord="0"/>
-                <arpeggiator arpgate="100" arpmode="0" arptime_syncmode="0" arptime_denominator="4" arpskip="0" arp="0" arp-enabled="0" arpdir="0" arpmiss="0" arprange="1" arpcycle="0" arptime_numerator="4" arptime="200"/>
-                <midiport outputchannel="1" basevelocity="63" inputchannel="0" outputcontroller="0" fixedinputvelocity="-1" writable="0" inputcontroller="0" outputprogram="1" fixedoutputnote="-1" fixedoutputvelocity="-1" readable="0"/>
-                <fxchain enabled="0" numofeffects="0"/>
+                <arpeggiator arp-enabled="0" arpcycle="0" arpdir="0" arptime_syncmode="0" arp="0" arptime_numerator="4" arptime_denominator="4" arpskip="0" arpmiss="0" arptime="200" arprange="1" arpgate="100" arpmode="0"/>
+                <midiport basevelocity="63" fixedoutputvelocity="-1" fixedoutputnote="-1" inputchannel="0" inputcontroller="0" outputprogram="1" readable="0" writable="0" fixedinputvelocity="-1" outputcontroller="0" outputchannel="1"/>
+                <fxchain numofeffects="0" enabled="0"/>
               </instrumenttrack>
-              <pattern name="Sf2 Player" muted="0" type="0" pos="0" steps="16">
-                <note key="57" vol="100" len="-192" pos="0" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="96" pan="0"/>
+              <pattern steps="16" type="0" name="Sf2 Player" muted="0" pos="0">
+                <note pan="0" key="57" len="-192" vol="100" pos="0"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="96"/>
               </pattern>
-              <pattern name="Sf2 Player" muted="0" type="0" pos="192" steps="32">
-                <note key="57" vol="100" len="-192" pos="48" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="144" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="240" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="336" pan="0"/>
+              <pattern steps="32" type="0" name="Sf2 Player" muted="0" pos="192">
+                <note pan="0" key="57" len="-192" vol="100" pos="48"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="144"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="240"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="336"/>
               </pattern>
             </track>
-            <track name="Sf2 Player" muted="0" type="0" solo="0">
-              <instrumenttrack pitch="0" vol="100" fxch="0" basenote="57" pan="0" pitchrange="1" usemasterpitch="1">
+            <track type="0" name="SGM-v2" solo="0" muted="0">
+              <instrumenttrack pan="0" usemasterpitch="1" fxch="0" basenote="57" vol="100" pitch="0" pitchrange="1">
                 <instrument name="sf2player">
-                  <sf2player src="soundfonts/SGM-v2.01-HQ-v3.0.sf2" chorusDepth="8" reverbRoomSize="0.2" reverbLevel="0.89999998" chorusLevel="2" bank="0" reverbOn="0" reverbDamping="0.2" chorusSpeed="0.30000001" chorusOn="0" patch="56" gain="1" chorusNum="0.89999998" reverbWidth="0.5"/>
+                  <sf2player src="soundfonts/SGM-v2.01-HQ-v3.0.sf2" chorusOn="0" reverbOn="0" chorusDepth="8" chorusSpeed="0.30000001" reverbLevel="0.89999998" reverbWidth="0.5" chorusLevel="2" reverbDamping="0.2" patch="56" reverbRoomSize="0.2" bank="0" gain="1" chorusNum="0.89999998"/>
                 </instrument>
-                <eldata ftype="0" fres="0.5" fcut="14000" fwet="0">
-                  <elvol x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
-                  <elcut x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
-                  <elres x100="0" lamt="0" lspd="0.1" ctlenvamt="0" rel="0.1" lshp="0" latt="0" sustain="0.5" userwavefile="" lspd_syncmode="0" hold="0.5" amt="0" lpdel="0" lspd_denominator="4" dec="0.5" pdel="0" att="0" lspd_numerator="4"/>
+                <eldata fwet="0" ftype="0" fcut="14000" fres="0.5">
+                  <elvol lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
+                  <elcut lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
+                  <elres lspd_numerator="4" amt="0" userwavefile="" lpdel="0" pdel="0" rel="0.1" lspd_denominator="4" lspd="0.1" sustain="0.5" lspd_syncmode="0" x100="0" hold="0.5" latt="0" att="0" ctlenvamt="0" lshp="0" lamt="0" dec="0.5"/>
                 </eldata>
                 <chordcreator chordrange="1" chord-enabled="0" chord="0"/>
-                <arpeggiator arpgate="100" arpmode="0" arptime_syncmode="0" arptime_denominator="4" arpskip="0" arp="0" arp-enabled="0" arpdir="0" arpmiss="0" arprange="1" arpcycle="0" arptime_numerator="4" arptime="200"/>
-                <midiport outputchannel="1" basevelocity="63" inputchannel="0" outputcontroller="0" fixedinputvelocity="-1" writable="0" inputcontroller="0" outputprogram="1" fixedoutputnote="-1" fixedoutputvelocity="-1" readable="0"/>
-                <fxchain enabled="0" numofeffects="0"/>
+                <arpeggiator arp-enabled="0" arpcycle="0" arpdir="0" arptime_syncmode="0" arp="0" arptime_numerator="4" arptime_denominator="4" arpskip="0" arpmiss="0" arptime="200" arprange="1" arpgate="100" arpmode="0"/>
+                <midiport basevelocity="63" fixedoutputvelocity="-1" fixedoutputnote="-1" inputchannel="0" inputcontroller="0" outputprogram="1" readable="0" writable="0" fixedinputvelocity="-1" outputcontroller="0" outputchannel="1"/>
+                <fxchain numofeffects="0" enabled="0"/>
               </instrumenttrack>
-              <pattern name="Sf2 Player" muted="0" type="0" pos="0" steps="16"/>
-              <pattern name="Sf2 Player" muted="0" type="0" pos="192" steps="32">
-                <note key="57" vol="100" len="-192" pos="0" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="24" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="96" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="120" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="192" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="216" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="288" pan="0"/>
-                <note key="57" vol="100" len="-192" pos="312" pan="0"/>
+              <pattern steps="16" type="0" name="Sf2 Player" muted="0" pos="0"/>
+              <pattern steps="32" type="0" name="Sf2 Player" muted="0" pos="192">
+                <note pan="0" key="57" len="-192" vol="100" pos="0"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="24"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="96"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="120"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="192"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="216"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="288"/>
+                <note pan="0" key="57" len="-192" vol="100" pos="312"/>
               </pattern>
             </track>
           </trackcontainer>
         </bbtrack>
-        <bbtco usestyle="1" name="" muted="0" len="1536" pos="0" color="4286611584"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="1536" muted="0" pos="0"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="1728" muted="0" pos="2112"/>
       </track>
-      <track name="Beat/Bassline 1" muted="0" type="1" solo="0">
+      <track type="1" name="Beat/Bassline 1" solo="0" muted="0">
         <bbtrack/>
-        <bbtco usestyle="1" name="" muted="0" len="768" pos="768" color="4286611584"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="768" muted="0" pos="768"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="384" muted="0" pos="1920"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="384" muted="0" pos="2496"/>
+        <bbtco usestyle="1" color="4286611584" name="" len="384" muted="0" pos="3072"/>
       </track>
     </trackcontainer>
-    <track name="Automation track" muted="0" type="6" solo="0">
+    <track type="6" name="Automation track" solo="0" muted="0">
       <automationtrack/>
-      <automationpattern mute="0" name="Numerator" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Denominator" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Tempo" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Master volume" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Master pitch" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Numerator" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Denominator" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Tempo" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Master volume" tens="1" prog="0" len="192" pos="0"/>
-      <automationpattern mute="0" name="Master pitch" tens="1" prog="0" len="192" pos="0"/>
+      <automationpattern prog="0" name="Numerator" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Denominator" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Tempo" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Master volume" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Master pitch" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Numerator" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Denominator" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Tempo" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Master volume" mute="0" len="192" pos="0" tens="1"/>
+      <automationpattern prog="0" name="Master pitch" mute="0" len="192" pos="0" tens="1"/>
     </track>
-    <fxmixer visible="1" width="561" x="5" maximized="0" height="333" minimized="0" y="310">
-      <fxchannel name="Master" num="0" muted="0" soloed="0" volume="1">
-        <fxchain enabled="0" numofeffects="0"/>
+    <fxmixer height="333" x="5" visible="1" maximized="0" width="561" minimized="0" y="310">
+      <fxchannel num="0" volume="1" name="Master" muted="0" soloed="0">
+        <fxchain numofeffects="0" enabled="0"/>
       </fxchannel>
     </fxmixer>
-    <ControllerRackView visible="1" width="350" x="836" maximized="0" height="200" minimized="0" y="407"/>
-    <pianoroll visible="0" width="860" x="1" maximized="0" height="480" minimized="0" y="1"/>
-    <automationeditor visible="0" width="860" x="56" maximized="0" height="400" minimized="0" y="255"/>
-    <projectnotes visible="0" width="744" x="1" maximized="0" height="400" minimized="0" y="1"><![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+    <ControllerRackView height="200" x="836" visible="1" maximized="0" width="350" minimized="0" y="407"/>
+    <pianoroll height="480" x="1" visible="0" maximized="0" width="860" minimized="0" y="1"/>
+    <automationeditor height="400" x="56" visible="0" maximized="0" width="860" minimized="0" y="255"/>
+    <projectnotes height="400" x="1" visible="0" maximized="0" width="744" minimized="0" y="1"><![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
 p, li { white-space: pre-wrap; }
 </style></head><body style=" font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;">
 <p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p></body></html>]]></projectnotes>
-    <timeline lpstate="0" lp0pos="0" lp1pos="192"/>
+    <timeline lp1pos="192" lpstate="0" lp0pos="0"/>
     <controllers/>
   </song>
 </lmms-project>
