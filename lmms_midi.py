@@ -3,6 +3,7 @@ from math import ceil, log2
 from enum import Enum
 from midiutil.MidiFile import MIDIFile
 import xml.etree.ElementTree as ET
+import copy as copy
 
 # NOTES --> PATTERNS --> REGULAR TRACKS
 
@@ -24,6 +25,7 @@ class Pattern:
     def __init__(self, pos:int, notes:ArrayType):
         self.pos = pos
         self.notes = notes
+        self.length = -1
     
     def add_note(self, note:Note):
         self.notes.append(note)
@@ -35,7 +37,11 @@ class Pattern:
         return string
     
     def get_length(self):
-        return self.notes[-1].time + self.notes[-1].duration
+        calculated_length = self.notes[-1].time + self.notes[-1].duration
+        if calculated_length > self.length or self.length == 1:
+            return calculated_length
+        else:
+            return self.length
     
     def clone_notes(self):
         notes = []
@@ -227,49 +233,10 @@ def parse_xml(xml_path):
             automation_tracks.append(track)
     # 5. Goes through each SF2 Player track
     for track in sf2_tracks:
-        midi_track = midi_track_from_xml(track)
-        # Loops through each pattern, adding notes
-        for pattern in track.findall("pattern"):
-            midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
-            for note in pattern:
-                midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
-            midi_track.add_pattern(midi_pattern)
-        # Adds track
-        midi_song.add_track(midi_track)
+        midi_song.add_track(midi_track_from_xml(track))
     # Easy, right? Well, just you wait until step 6...
     # 6. Goes through each SF2 Player Beat/Bassline trackfor automation_track in automation_tracks:
-    for bb_track in sf2_bb_tracks:
-        # Goes over each "repeat", called a bbtco for Beat/Bassline Track Container
-        all_bbtco = []
-        for child in bb_track:
-            if child.tag == "bbtco" and child.attrib["muted"] == "0": all_bbtco.append([int(child.attrib["pos"]), int(child.attrib["len"])])
-        # Goes over each individual track
-        for track in bb_track.findall("bbtrack/trackcontainer/track"):
-            if is_sf2_player(track) == False: continue # <-- Not all sub-instruments will be sf2 players
-            midi_track = midi_track_from_xml(track)
-            # 6. Loops through each pattern, adding notes. Now THIS part is different...
-            midi_patterns = []
-            for pattern in track.findall("pattern"): # <-- Element (XML) type
-                if len(pattern.findall("note")) == 0:
-                    continue
-                midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
-                for note in pattern:
-                    note.attrib["len"] = 24 # Because for SOME REASON LMMS sets it to -192 (so this a quarter note now, see line 78 for the same number)
-                    midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
-                midi_patterns.append(midi_pattern)
-            for pattern in midi_patterns: # <-- Pattern type
-                for bbtco in all_bbtco:
-                    pattern_length_measure = midi_song.get_measure_length() * ceil(pattern.get_length()/midi_song.get_measure_length())
-                    for i in range(0, ceil(bbtco[1]/pattern_length_measure)):
-                        clone = Pattern(pos=int(pattern.pos + bbtco[0] + i*pattern_length_measure), notes=[])
-                        # Chops off patterns longer than the bbtco element
-                        for note in pattern.clone_notes():
-                            if (note.time + clone.pos) < (bbtco[0] + bbtco[1]): #"If the global start position of the note is less than/equal to than the global end position of the bbtco..."
-                                clone.notes.append(note)
-                        # Alright. We are FINALLY done with this hell.
-                        midi_track.add_pattern(clone)
-            # Adds track
-            midi_song.add_track(midi_track)
+    if len(sf2_bb_tracks) > 0: add_bb_tracks(midi_song, sf2_bb_tracks)
     # 7. Goes through automation tracks
     for automation_track in automation_tracks:
         midi_atrack = AutomationTrack([])
@@ -284,6 +251,54 @@ def parse_xml(xml_path):
         midi_song.add_automation_track(midi_atrack)
     return midi_song
 
+# Notes:
+#   - The first Beat/Bassline track acts like a b/b track but ALSO like a header, defining each pattern.
+#   - The first pattern in each sub-track corresponds to the first b/b track, and so on.
+# I found out some of this through lynxwave.com/LMMStoMIDI; check it out!
+def add_bb_tracks(midi_song:Song, sf2_bb_tracks:ArrayType):
+    # Deal with the "header" beat/bassline track
+    header_bb_track = sf2_bb_tracks[0]
+    bb_tracks = [] # The *actual* tracks in beat/bassline tracks
+    for track in header_bb_track.find("bbtrack/trackcontainer"):
+        if is_sf2_player(track) == True: bb_tracks.append(midi_track_from_xml(track))
+    # Deal with every beat/bassline track
+    # Goes over each individual track:
+    for track in bb_tracks:
+        # Clones the track
+        midi_track = copy.deepcopy(track)
+        # Resets patterns in the clone
+        midi_track.patterns = []
+        # Goes over every beat/bassline track
+        for (bb_track_idx, bb_track) in enumerate(sf2_bb_tracks):
+            # Finds the right pattern to use (and fixes its time since the length of everything is -192 for some reason)
+            pattern = track.patterns[bb_track_idx]
+            pattern.pos = 0
+            if len(pattern.notes) == 0: # Sometimes we actually get *empty* patterns. Yep!
+                continue
+            for note in pattern.notes:
+                if note.duration <= 0: note.duration = 12 # 12 ticks, LMMS format. TECHNICALLY this is wrong as LMMS actually makes these notes as long as possible for some reason
+
+            # Goes over each "repeat", called a bbtco for Beat/Bassline Track Container
+            all_bbtco = []
+            for child in bb_track:
+                if child.tag == "bbtco" and child.attrib["muted"] == "0": all_bbtco.append([int(child.attrib["pos"]), int(child.attrib["len"])])
+
+            # Trims/repeats the right pattern for the beat/bassline track
+            for bbtco in all_bbtco:
+                patterns_to_add = ceil(bbtco[1]/pattern.get_length()) # How much times we have to repeat a pattern to fit in the duration of a bbtco
+                for i in range(0, patterns_to_add):
+                    clone = copy.deepcopy(pattern)
+                    clone.pos = int(bbtco[0]) + i*pattern.get_length()
+                    clone.notes = []
+                    # Chops off patterns longer than the bbtco element
+                    for note in pattern.clone_notes():
+                        if (note.time + clone.pos) < (bbtco[0] + bbtco[1]): #"If the global start position of the note is less than/equal to than the global end position of the bbtco..."
+                            clone.notes.append(note)
+                    # Alright. We are FINALLY done with this hell.
+                    midi_track.add_pattern(clone)
+        # Adds track
+        midi_song.add_track(midi_track)
+
 def is_sf2_player(track):
     return track.find("instrumenttrack/instrument") and "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player"
 
@@ -294,5 +309,14 @@ def midi_track_from_xml(track):
     midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200 if "vol" in track.find("instrumenttrack").attrib else 1
     midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100 if "pan" in track.find("instrumenttrack").attrib else 0
     midi_track.automation_parameters = find_automations_in_xml(track)
+    # Loops through each pattern, adding notes
+    for pattern in track.findall("pattern"):
+        midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
+        for note in pattern:
+            midi_pattern.add_note(Note(pos=int(note.attrib["pos"]), pan=int(note.attrib["pan"]), length=int(note.attrib["len"]), vol=float(note.attrib["vol"]) / 200, key=int(note.attrib["key"])))
+        # Calculates the length of each pattern if it has the "steps" attribute
+        if "steps" in pattern.attrib:
+            midi_pattern.length = int(pattern.attrib["steps"]) * 12 # Remember: multiply steps by 12 ticks in LMMS time
+        midi_track.add_pattern(midi_pattern)
     return midi_track
 
