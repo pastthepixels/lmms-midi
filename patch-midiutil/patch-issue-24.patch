@@ -1,0 +1,14 @@
+--- MidiFile.py	2022-11-05 15:43:59.907726702 -0600
++++ MidiFile-patched.py	2022-11-05 15:46:46.541266906 -0600
+@@ -886,8 +886,9 @@
+                         event.tick = stack[noteeventkey].pop()
+                         tempEventList.append(event)
+                     else:
+-                        stack[noteeventkey].pop()
+-                        tempEventList.append(event)
++                        if not stack[noteeventkey]==[]:
++                               stack[noteeventkey].pop()
++                               tempEventList.append(event)
+             else:
+                 tempEventList.append(event)
+
