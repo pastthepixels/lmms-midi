@@ -25,6 +25,7 @@ python3 main.py YOURFILE.mmp
 * Pitch/volume/pan automation tracks
 
 ## What doesn't work (yet)
+Help reduce this list to zero by contributing to lmms-midi! New issues and PRs are very welcome and encouraged!
 
 * Track volume > 100%
 * Track pitch
@@ -40,10 +41,7 @@ python3 main.py YOURFILE.mmp
 * Any instrument track that isn't an SF2 player (including audio samples)
    * Kind-of self-explanatory: you can't play custom synths with MIDI. Be warned though that SF2 files may have extra instruments that might not be standard throughout, so keep an eye out for your SF2 player's bank/patch.
 
-Help reduce this list to zero by contributing to lmms-midi! New issues and PRs are very welcome and encouraged!
-
-*Useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html*
-
 ## Notes
 
+* Here's a useful link for some MIDI specifications: https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
 * If you have multiple drum tracks, they'll converge into one because you can only have one MIDI channel for drums. It'll sound fine, but this means the resulting drum track will take on the properties (ex. volume/panning) of the lowest drum track you have (where beat/bassline tracks count as lower than regular tracks). Unfortunately this also means that LMMS, when importing your .mid files, will also import the drums as one track.
