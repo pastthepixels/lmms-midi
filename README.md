@@ -27,7 +27,6 @@ python3 main.py YOURFILE.mmp
 ## What doesn't work (yet)
 Help reduce this list to zero by contributing to lmms-midi! New issues and PRs are very welcome and encouraged!
 
-* Track volume > 100%
 * Track pitch
 * Note panning
 * Master volume automation tracks
