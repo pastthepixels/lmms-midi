@@ -5,6 +5,9 @@ from midiutil.MidiFile import MIDIFile
 import xml.etree.ElementTree as ET
 import copy as copy
 
+# Constants
+WIZARD_MODE = False
+
 # NOTES --> PATTERNS --> REGULAR TRACKS
 
 class Note:
@@ -300,15 +303,32 @@ def add_bb_tracks(midi_song:Song, sf2_bb_tracks:ArrayType):
         midi_song.add_track(midi_track)
 
 def is_sf2_player(track):
-    return track.find("instrumenttrack/instrument") and "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player"
+    condition = track.find("instrumenttrack/instrument") and "name" in track.find("instrumenttrack/instrument").attrib and track.find("instrumenttrack/instrument").attrib["name"] == "sf2player"
+    if condition == False and WIZARD_MODE == True:
+        condition = input("Track '{}' found to not be an SF2 player. Include it anyway? [y/N]: ".format(track.attrib["name"])).lower() == "y"
+    return condition
 
 def midi_track_from_xml(track):
     midi_track = Track(name=track.attrib["name"])
-    midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
-    midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
+    try:
+        # If the track is an SF2 player take the patch and bank from it
+        midi_track.patch = int(track.find("instrumenttrack/instrument/sf2player").attrib["patch"])
+        midi_track.bank = int(track.find("instrumenttrack/instrument/sf2player").attrib["bank"])
+    except:
+        # Otherwise set it to defaults
+        if WIZARD_MODE == True:
+            print("--- Failed to set patch and bank for track '{}'; Since you have wizard mode enabled you can choose what these are set to. ---".format(midi_track.name))
+            print("If you don't know what to pick, just choose 0 for the default piano. You can also open LMMS with an SF2 player to look at what is available.")
+            midi_track.patch = int(input("\t Patch: "))
+            midi_track.bank = int(input("\t Bank: "))
+        else:
+            print("Failed to set patch and bank for track '{}'; setting both to 0. This could likely be due to it not being an SF2 player.".format(midi_track.name))
+            midi_track.patch = 0
+            midi_track.bank = 0
     midi_track.volume = float(track.find("instrumenttrack").attrib["vol"]) / 200 if "vol" in track.find("instrumenttrack").attrib else 1
     midi_track.pan = float(track.find("instrumenttrack").attrib["pan"]) / 100 if "pan" in track.find("instrumenttrack").attrib else 0
     midi_track.automation_parameters = find_automations_in_xml(track)
+
     # Loops through each pattern, adding notes
     for pattern in track.findall("pattern"):
         midi_pattern = Pattern(pos=int(pattern.attrib["pos"]), notes=[])
@@ -320,3 +340,7 @@ def midi_track_from_xml(track):
         midi_track.add_pattern(midi_pattern)
     return midi_track
 
+# Wizard mode-specific functions
+def set_wizard_mode(bool):
+    global WIZARD_MODE
+    WIZARD_MODE = bool
