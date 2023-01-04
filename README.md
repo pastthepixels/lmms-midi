@@ -39,6 +39,7 @@ Help reduce this list to zero by contributing to lmms-midi! New issues and PRs a
 
 * Any instrument track that isn't an SF2 player (including audio samples)
    * Kind-of self-explanatory: you can't play custom synths with MIDI. Be warned though that SF2 files may have extra instruments that might not be standard throughout, so keep an eye out for your SF2 player's bank/patch.
+   * You can, however, subsitute these with MIDI instruments if you use the `--wizard` flag on `main.py`.
 
 ## Notes
 
