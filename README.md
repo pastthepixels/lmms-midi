@@ -2,6 +2,11 @@ lmms-midi
 =========
 A simple Python script to convert uncompressed (.mmp) LMMS songs to MIDI files, complete with instruments.  
 
+## Why you should choose lmms-midi over other programs
+* It's actually maintained
+* You have more control over non-SF2 player instruments
+* Instrument types are converted (including drum kits)
+
 ## Installation and usage
 
 First, make sure you have the latest version of Python. You can head over to https://python.org/downloads to get it.  
