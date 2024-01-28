@@ -177,7 +177,7 @@ class Song:
 
             for pattern in track.patterns:
                 for note in pattern.notes:
-                    note.pitch += 12 # Have to raise everything by an octave for some reason. Very cool
+                    note.pitch += 12 # TODO: FIX Have to raise everything by an octave for some reason. Very cool
                     midi_file.addNote(track_num, channel, note.pitch, (note.time + pattern.pos) / 48, note.duration / 48, int(note.volume * 127))
             
             for automation_parameter in track.automation_parameters:
@@ -221,7 +221,8 @@ def parse_xml(xml_path):
     head = root.find("head")
     song = root.find("song")
     # 3. Creates a Song instance with right name/bpm/time signature
-    midi_song = Song(xml_path[:-4], int(head.attrib["bpm"]))
+    bpm = int(head.attrib["bpm"]) if "bpm" in head.attrib else int(head.find("bpm").attrib["value"])
+    midi_song = Song(xml_path[:-4], bpm)
     midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
     # 4. Goes through each track, classifying them
     sf2_tracks = []
