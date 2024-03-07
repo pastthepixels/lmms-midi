@@ -144,9 +144,9 @@ def apply_automation_key(automation_type:int, midi_file:MIDIFile, track_num:int,
 # SONGS
 
 class Song:
-    def __init__(self, name:str="", bpm:int=120, timesig:ArrayType=[4, 4]):
+    def __init__(self, filename:str="", bpm:int=120, timesig:ArrayType=[4, 4]):
         # Name/music information
-        self.name = name
+        self.filename = filename
         self.bpm = bpm
         self.timesig = timesig
         # Tracks
@@ -205,7 +205,7 @@ class Song:
             if track.bank == 128: channel = oldchannel # Restores channel count as usual
             channel += 1
 
-        with open("{0}.mid".format(self.name), 'wb') as outf:
+        with open(self.filename, 'wb') as outf:
             midi_file.writeFile(outf)
     
     def get_measure_length(self):
@@ -213,7 +213,7 @@ class Song:
 
 # LOADING FILES
 
-def parse_xml(xml_path):
+def parse_xml(xml_path, output:str=None):
     # 1. Loads and parses XML
     tree = ET.parse(xml_path)
     root = tree.getroot()        
@@ -222,7 +222,7 @@ def parse_xml(xml_path):
     song = root.find("song")
     # 3. Creates a Song instance with right name/bpm/time signature
     bpm = int(head.attrib["bpm"]) if "bpm" in head.attrib else int(head.find("bpm").attrib["value"])
-    midi_song = Song(xml_path[:-4], bpm)
+    midi_song = Song(xml_path[:-4]+".mid" if output == None else output, bpm)
     midi_song.timesig = [int(head.attrib["timesig_numerator"]), int(head.attrib["timesig_denominator"])]
     # 4. Goes through each track, classifying them
     sf2_tracks = []

@@ -9,28 +9,31 @@ lmms-midi
 USAGE:
     main.py FILENAME.mmp
 FLAGS:
-    --debug   --> Shows IndexError and FileNotFoundError errors instead of assuming you did something wrong
-    --help    --> Shows this screen
-    --wizard  --> Ask about things like whether to include non-SF2 tracks
+    --debug                     --> Shows IndexError and FileNotFoundError errors instead of assuming you did something wrong
+    --help                      --> Shows this screen
+    --output=/path/to/file.mid  --> Specify output file
+    --wizard                    --> Ask about things like whether to include non-SF2 tracks
 """
 
 debug = False
 files = []
+flags = [i.split("=") for i in sys.argv]
+output = None
 
 def export_all():
-    if files == []:
+    if not files:
         print(HELP_TEXT)
     for path in files:
-    	print("Exporting {0}...".format(path))
-    	parse_xml(path).compile_export()
+        if output:
+            print(f"Using output file {output}:", end=" ")
+        print(f"Exporting {path}...")
+        parse_xml(path, output).compile_export()
 
 def find_flags():
-    global debug
-    global files
-    for i in range(1, len(sys.argv)):
-        match sys.argv[i]:
+    for flag in flags:
+        match flag[0]:
             case "--debug":
-                debug = True
+                globals()["debug"] = True
 
             case "--help":
                 help()
@@ -39,8 +42,16 @@ def find_flags():
             case "--wizard":
                 set_wizard_mode(True)
 
+            case "--output":
+                if len(flag) == 2:
+                    globals()["output"] = flag[1]
+                else:
+                    print("Error: output file not specified.")
+                    sys.exit(1)
+
             case _:
-                files.append(str(sys.argv[i]))
+                if str(flag[0])[-4:] == ".mmp":
+                    globals()["files"].append(str(flag[0]))
 
 find_flags()
 
